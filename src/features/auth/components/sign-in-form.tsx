@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -17,10 +17,14 @@ import {
   type SignInInput,
 } from "@/features/auth/schemas";
 
-export function SignInForm() {
+function SignInFormFields() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [oauthPending, setOauthPending] = useState(false);
+
+  const prefillEmail = searchParams.get("email") ?? "";
+  const prefillPassword = searchParams.get("password") ?? "";
 
   const {
     register,
@@ -29,21 +33,26 @@ export function SignInForm() {
   } = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: prefillEmail,
+      password: prefillPassword,
     },
   });
 
   const onSubmit = handleSubmit((values) => {
     startTransition(async () => {
-      const { error } = await authClient.signIn.email({
-        email: values.email,
-        password: values.password,
-        callbackURL: "/dashboard",
-      });
+      try {
+        const { error } = await authClient.signIn.email({
+          email: values.email,
+          password: values.password,
+          callbackURL: "/dashboard",
+        });
 
-      if (error) {
-        toast.error(error.message ?? "Unable to sign in");
+        if (error) {
+          toast.error(error.message ?? "Unable to sign in");
+          return;
+        }
+      } catch {
+        toast.error("Unable to sign in — check your connection and try again");
         return;
       }
 
@@ -130,5 +139,21 @@ export function SignInForm() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export function SignInForm() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-4" aria-hidden>
+          <div className="h-9 rounded-lg bg-muted/60" />
+          <div className="h-9 rounded-lg bg-muted/60" />
+          <div className="h-9 rounded-lg bg-muted/40" />
+        </div>
+      }
+    >
+      <SignInFormFields />
+    </Suspense>
   );
 }

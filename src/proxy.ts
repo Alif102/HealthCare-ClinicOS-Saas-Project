@@ -28,6 +28,7 @@ export function proxy(request: NextRequest) {
   if (isProtectedRoute && !sessionCookie) {
     const url = request.nextUrl.clone();
     url.pathname = "/sign-in";
+    url.search = "";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
   }
@@ -35,6 +36,8 @@ export function proxy(request: NextRequest) {
   if (isAuthRoute && sessionCookie) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
+    // Drop demo/prefill query (email, password) — never carry onto the app shell
+    url.search = "";
     return NextResponse.redirect(url);
   }
 

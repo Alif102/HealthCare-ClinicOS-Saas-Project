@@ -1,6 +1,6 @@
 # Phase 16 — Testing & Optimization
 
-**Status:** Complete (awaiting approval before Phase 17)  
+**Status:** Complete
 **Scope:** Vitest unit suite for pure domain logic, list `take` caps, list/report indexes, light Next.js polish — not Playwright e2e, not CI cloud secrets, not full page-2 cursor UI
 
 ---
@@ -94,6 +94,6 @@ Manual smoke (after seed): sign in → patients/doctors lists → book a slot �
 
 ## Phase gate
 
-**Next:** Phase 17 — Deployment (Vercel)
+**Next:** Phase 18 — ThemeForest Optimization & Documentation (after Phase 17)
 
-Do **not** start the next phase until you explicitly approve Phase 16.
+Phase 17 — Deployment: see `docs/phase-17-deployment.md`.

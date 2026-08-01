@@ -37,15 +37,20 @@ export function SignUpForm() {
 
   const onSubmit = handleSubmit((values) => {
     startTransition(async () => {
-      const { error } = await authClient.signUp.email({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        callbackURL: "/dashboard",
-      });
+      try {
+        const { error } = await authClient.signUp.email({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+          callbackURL: "/dashboard",
+        });
 
-      if (error) {
-        toast.error(error.message ?? "Unable to create account");
+        if (error) {
+          toast.error(error.message ?? "Unable to create account");
+          return;
+        }
+      } catch {
+        toast.error("Unable to create account — check your connection and try again");
         return;
       }
 
