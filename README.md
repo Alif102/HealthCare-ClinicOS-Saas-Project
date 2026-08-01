@@ -2,6 +2,20 @@
 
 Production-oriented Healthcare SaaS (Clinic Operating System) built with Next.js, TypeScript, Tailwind CSS, shadcn/ui, Prisma, PostgreSQL, and Better Auth.
 
+## Screenshots
+
+### Landing page
+
+![ClinicOS landing page](docs/screenshots/landing.png)
+
+### Admin dashboard
+
+![ClinicOS admin dashboard](docs/screenshots/admin-dashboard.png)
+
+### Patient portal
+
+![ClinicOS patient dashboard](docs/screenshots/patient-dashboard.png)
+
 ## Current phase
 
 **Phase 16 — Testing & Optimization** is complete. See [docs/phase-16-testing-optimization.md](docs/phase-16-testing-optimization.md).
