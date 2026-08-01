@@ -33,6 +33,12 @@ export default async function AppLayout({
     ...(membership?.role && membership.role !== "PATIENT"
       ? [{ href: "/reports", label: "Reports" }]
       : []),
+    ...(membership?.role === "ADMIN" ||
+    membership?.role === "RECEPTIONIST" ||
+    membership?.role === "PATIENT"
+      ? [{ href: "/billing", label: "Billing" }]
+      : []),
+    { href: "/video", label: "Video" },
   ];
 
   return (

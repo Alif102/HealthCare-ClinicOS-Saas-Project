@@ -17,7 +17,11 @@ import {
   APPOINTMENT_TYPE_LABEL,
 } from "@/features/appointments/constants";
 import { getAppointmentById } from "@/features/appointments/queries";
+import { INVOICE_STATUS_LABEL } from "@/features/billing/constants";
+import { formatMoney } from "@/features/billing/money";
 import { PRESCRIPTION_STATUS_LABEL } from "@/features/prescriptions/constants";
+import { VideoSessionActions } from "@/features/video/components/video-session-actions";
+import { resolveVideoSessionStatus } from "@/features/video/constants";
 import { requireTenantContext } from "@/lib/auth-session";
 import { cn } from "@/lib/utils";
 
@@ -67,6 +71,25 @@ export default async function AppointmentDetailPage({
   const canWriteRx =
     membership.role === "DOCTOR" &&
     appointment.doctorProfile.user.id === session.user.id;
+  const canBill =
+    membership.role === "ADMIN" || membership.role === "RECEPTIONIST";
+  const canPrepareVideo =
+    (membership.role === "ADMIN" ||
+      membership.role === "RECEPTIONIST" ||
+      (membership.role === "DOCTOR" &&
+        appointment.doctorProfile.user.id === session.user.id)) &&
+    appointment.type === "VIDEO";
+  const canJoinVideo =
+    appointment.type === "VIDEO" &&
+    ((membership.role === "DOCTOR" &&
+      appointment.doctorProfile.user.id === session.user.id) ||
+      (membership.role === "PATIENT" &&
+        appointment.patientProfile.user.id === session.user.id) ||
+      membership.role === "ADMIN" ||
+      membership.role === "RECEPTIONIST");
+  const canEndVideo =
+    canPrepareVideo &&
+    Boolean(appointment.consultation && !appointment.consultation.endedAt);
 
   return (
     <div className="space-y-6">
@@ -227,6 +250,66 @@ export default async function AppointmentDetailPage({
                 </p>
               )}
             </div>
+
+            <div className="space-y-3 rounded-xl border border-border/70 p-4 sm:col-span-2">
+              <p className="text-sm font-medium">Invoice</p>
+              {appointment.invoice ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge variant="outline">
+                    {INVOICE_STATUS_LABEL[appointment.invoice.status]}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {appointment.invoice.invoiceNumber} ·{" "}
+                    {formatMoney(
+                      appointment.invoice.total,
+                      appointment.invoice.currency,
+                    )}
+                  </span>
+                  {membership.role !== "DOCTOR" ? (
+                    <Link
+                      href={`/billing/${appointment.invoice.id}`}
+                      className={cn(buttonVariants({ variant: "outline" }))}
+                    >
+                      Open invoice
+                    </Link>
+                  ) : null}
+                </div>
+              ) : canBill ? (
+                <Link
+                  href={`/billing/new?patientId=${appointment.patientProfileId}&appointmentId=${appointment.id}`}
+                  className={cn(buttonVariants())}
+                >
+                  Create invoice
+                </Link>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No invoice linked to this visit yet.
+                </p>
+              )}
+            </div>
+
+            {appointment.type === "VIDEO" ? (
+              <div className="space-y-3 rounded-xl border border-border/70 p-4 sm:col-span-2">
+                <p className="text-sm font-medium">Video consultation</p>
+                <VideoSessionActions
+                  appointmentId={appointment.id}
+                  session={
+                    appointment.consultation
+                      ? {
+                          id: appointment.consultation.id,
+                          status: resolveVideoSessionStatus(
+                            appointment.consultation,
+                          ),
+                          joinUrl: appointment.consultation.joinUrl,
+                        }
+                      : null
+                  }
+                  canPrepare={canPrepareVideo}
+                  canJoin={canJoinVideo}
+                  canEnd={canEndVideo}
+                />
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       </div>

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { listAppointments } from "@/features/appointments/queries";
+import { listInvoices } from "@/features/billing/queries";
 import { getDoctorByUserId, listDoctors } from "@/features/doctors/queries";
 import {
   getPatientByUserId,
@@ -45,6 +46,7 @@ export default async function DashboardPage() {
 
   let upcomingCount = 0;
   let prescriptionCount = 0;
+  let invoiceCount = 0;
   if (membership) {
     if (membership.role === "DOCTOR") {
       const me = await getDoctorByUserId(membership.tenantId, session.user.id);
@@ -82,6 +84,13 @@ export default async function DashboardPage() {
           })
         : [];
       prescriptionCount = rx.length;
+      const invoices = me
+        ? await listInvoices(membership.tenantId, {
+            patientProfileId: me.id,
+            take: 10,
+          })
+        : [];
+      invoiceCount = invoices.length;
     } else {
       const rows = await listAppointments(membership.tenantId, {
         from,
@@ -91,6 +100,8 @@ export default async function DashboardPage() {
       upcomingCount = rows.length;
       const rx = await listPrescriptions(membership.tenantId, { take: 10 });
       prescriptionCount = rx.length;
+      const invoices = await listInvoices(membership.tenantId, { take: 10 });
+      invoiceCount = invoices.length;
     }
   }
 
@@ -236,6 +247,50 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         ) : null}
+
+        {membership?.role === "ADMIN" ||
+        membership?.role === "RECEPTIONIST" ||
+        membership?.role === "PATIENT" ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Billing</CardTitle>
+              <CardDescription>
+                {invoiceCount} recent invoice{invoiceCount === 1 ? "" : "s"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                {membership?.role === "PATIENT"
+                  ? "View charges for your visits."
+                  : "Create invoices and record clinic payments."}
+              </p>
+              <Link
+                href="/billing"
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                Open billing
+              </Link>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Video</CardTitle>
+            <CardDescription>Telehealth join rooms</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Prepare and join Jitsi-powered video visits for VIDEO appointments.
+            </p>
+            <Link
+              href="/video"
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              Open video
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

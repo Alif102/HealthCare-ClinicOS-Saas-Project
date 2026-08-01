@@ -355,6 +355,78 @@ async function main() {
           },
         });
       }
+
+      const existingInvoice = await prisma.invoice.count({
+        where: { tenantId: tenant.id, appointmentId },
+      });
+      if (existingInvoice === 0) {
+        const adminUser = seeded.find((row) => row.role === "ADMIN");
+        const doctor = await prisma.doctorProfile.findUnique({
+          where: { id: doctorProfileId },
+          select: { consultationFee: true },
+        });
+        const subtotal = doctor?.consultationFee ?? 75;
+        const dueAt = new Date();
+        dueAt.setUTCDate(dueAt.getUTCDate() + 14);
+
+        await prisma.invoice.create({
+          data: {
+            tenantId: tenant.id,
+            patientProfileId,
+            appointmentId,
+            createdById: adminUser?.userId,
+            invoiceNumber: `INV-${new Date().getUTCFullYear()}-0001`,
+            status: "PENDING",
+            subtotal,
+            tax: 0,
+            total: subtotal,
+            currency: "USD",
+            dueAt,
+            notes: "Demo consultation fee for ThemeForest preview.",
+          },
+        });
+      }
+    }
+
+    const existingVideo = await prisma.appointment.count({
+      where: {
+        tenantId: tenant.id,
+        doctorProfileId,
+        patientProfileId,
+        type: "VIDEO",
+      },
+    });
+
+    if (existingVideo === 0) {
+      const startAt = new Date();
+      startAt.setUTCHours(14, 0, 0, 0);
+      const day = startAt.getUTCDay();
+      const daysUntilWednesday = (3 - day + 7) % 7 || 7;
+      startAt.setUTCDate(startAt.getUTCDate() + daysUntilWednesday);
+      const endAt = new Date(startAt.getTime() + 30 * 60_000);
+
+      const videoAppointment = await prisma.appointment.create({
+        data: {
+          tenantId: tenant.id,
+          doctorProfileId,
+          patientProfileId,
+          startAt,
+          endAt,
+          status: "CONFIRMED",
+          type: "VIDEO",
+          reason: "Demo telehealth follow-up",
+        },
+      });
+
+      const roomName = `clinicos-demo${videoAppointment.id.slice(-8)}`;
+      await prisma.consultationSession.create({
+        data: {
+          tenantId: tenant.id,
+          appointmentId: videoAppointment.id,
+          roomName,
+          joinUrl: `https://meet.jit.si/${roomName}`,
+        },
+      });
     }
   }
 

@@ -33,6 +33,24 @@ const appointmentInclude = {
       chiefComplaint: true,
     },
   },
+  invoice: {
+    select: {
+      id: true,
+      status: true,
+      invoiceNumber: true,
+      total: true,
+      currency: true,
+    },
+  },
+  consultation: {
+    select: {
+      id: true,
+      roomName: true,
+      joinUrl: true,
+      startedAt: true,
+      endedAt: true,
+    },
+  },
 } as const;
 
 export type AppointmentListFilters = {

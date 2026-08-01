@@ -1,6 +1,6 @@
 # Phase 10 — Reports
 
-**Status:** Complete (awaiting approval before Phase 11)  
+**Status:** Complete
 **Scope:** Operational clinic metrics (aggregations) — not BI exports, scheduled digests, revenue charts, or insurance analytics
 
 ---
@@ -98,6 +98,4 @@ pnpm dev
 
 ## Phase gate
 
-**Next:** Phase 11 — Billing
-
-Do **not** start the next phase until you explicitly approve Phase 10.
+**Next:** Phase 11 — Billing — **started / complete** (see phase-11 doc)
