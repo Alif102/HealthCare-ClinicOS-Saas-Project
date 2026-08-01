@@ -16,7 +16,8 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/doctors") ||
     pathname.startsWith("/patients") ||
     pathname.startsWith("/appointments") ||
-    pathname.startsWith("/prescriptions");
+    pathname.startsWith("/prescriptions") ||
+    pathname.startsWith("/encounters");
 
   if (isProtectedRoute && !sessionCookie) {
     const url = request.nextUrl.clone();
@@ -41,6 +42,7 @@ export const config = {
     "/patients/:path*",
     "/appointments/:path*",
     "/prescriptions/:path*",
+    "/encounters/:path*",
     "/sign-in",
     "/sign-up",
   ],

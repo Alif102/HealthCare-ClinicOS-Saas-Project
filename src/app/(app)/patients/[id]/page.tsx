@@ -73,14 +73,22 @@ export default async function PatientDetailPage({
             ) : null}
           </div>
         </div>
-        {canManage ? (
+        <div className="flex flex-wrap gap-2">
           <Link
-            href={`/patients/${patient.id}/edit`}
+            href={`/patients/${patient.id}/history`}
             className={cn(buttonVariants({ variant: "outline" }))}
           >
-            Edit profile
+            Medical history
           </Link>
-        ) : null}
+          {canManage ? (
+            <Link
+              href={`/patients/${patient.id}/edit`}
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              Edit profile
+            </Link>
+          ) : null}
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -111,7 +119,7 @@ export default async function PatientDetailPage({
           <CardHeader>
             <CardTitle>Emergency & clinical summary</CardTitle>
             <CardDescription>
-              History modules will expand these counters later
+              Open medical history for allergies, conditions, and visit notes
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
@@ -124,6 +132,24 @@ export default async function PatientDetailPage({
               {patient.emergencyContactPhone || "—"}
             </p>
             <div className="grid grid-cols-2 gap-3 pt-2">
+              <Link
+                href={`/patients/${patient.id}/history`}
+                className="rounded-lg border border-border/70 px-3 py-2 hover:bg-muted/40"
+              >
+                <p className="text-xs text-muted-foreground">Allergies</p>
+                <p className="text-lg font-semibold">
+                  {patient._count.allergies}
+                </p>
+              </Link>
+              <Link
+                href={`/patients/${patient.id}/history`}
+                className="rounded-lg border border-border/70 px-3 py-2 hover:bg-muted/40"
+              >
+                <p className="text-xs text-muted-foreground">Conditions</p>
+                <p className="text-lg font-semibold">
+                  {patient._count.conditions}
+                </p>
+              </Link>
               <div className="rounded-lg border border-border/70 px-3 py-2">
                 <p className="text-xs text-muted-foreground">Appointments</p>
                 <p className="text-lg font-semibold">
@@ -134,18 +160,6 @@ export default async function PatientDetailPage({
                 <p className="text-xs text-muted-foreground">Prescriptions</p>
                 <p className="text-lg font-semibold">
                   {patient._count.prescriptions}
-                </p>
-              </div>
-              <div className="rounded-lg border border-border/70 px-3 py-2">
-                <p className="text-xs text-muted-foreground">Allergies</p>
-                <p className="text-lg font-semibold">
-                  {patient._count.allergies}
-                </p>
-              </div>
-              <div className="rounded-lg border border-border/70 px-3 py-2">
-                <p className="text-xs text-muted-foreground">Conditions</p>
-                <p className="text-lg font-semibold">
-                  {patient._count.conditions}
                 </p>
               </div>
             </div>

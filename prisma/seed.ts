@@ -299,6 +299,63 @@ async function main() {
         },
       });
     }
+
+    const existingAllergies = await prisma.allergy.count({
+      where: { tenantId: tenant.id, patientProfileId },
+    });
+    if (existingAllergies === 0) {
+      await prisma.allergy.create({
+        data: {
+          tenantId: tenant.id,
+          patientProfileId,
+          allergen: "Penicillin",
+          reaction: "Rash and itching",
+          severity: "moderate",
+          notedAt: new Date("2024-06-01"),
+        },
+      });
+    }
+
+    const existingConditions = await prisma.medicalCondition.count({
+      where: { tenantId: tenant.id, patientProfileId },
+    });
+    if (existingConditions === 0) {
+      await prisma.medicalCondition.create({
+        data: {
+          tenantId: tenant.id,
+          patientProfileId,
+          name: "Seasonal asthma",
+          status: "chronic",
+          diagnosedAt: new Date("2019-03-12"),
+          notes: "Triggered by pollen; uses rescue inhaler.",
+        },
+      });
+    }
+
+    if (appointmentId) {
+      const existingEncounter = await prisma.encounter.count({
+        where: { appointmentId },
+      });
+      if (existingEncounter === 0) {
+        await prisma.encounter.create({
+          data: {
+            tenantId: tenant.id,
+            appointmentId,
+            doctorProfileId,
+            patientProfileId,
+            chiefComplaint: "Routine checkup and mild cough",
+            assessment: "Viral upper respiratory symptoms; asthma stable.",
+            plan: "Supportive care, continue inhaler PRN, follow up if worsens.",
+            vitalsJson: {
+              bloodPressure: "118/76",
+              heartRate: "72",
+              temperature: "98.4°F",
+              weight: "64 kg",
+            },
+          },
+        });
+      }
+    }
   }
 
   console.log("Seeded tenant:", tenant.slug);

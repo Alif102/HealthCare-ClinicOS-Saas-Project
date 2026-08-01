@@ -27,6 +27,12 @@ const appointmentInclude = {
       status: true,
     },
   },
+  encounter: {
+    select: {
+      id: true,
+      chiefComplaint: true,
+    },
+  },
 } as const;
 
 export type AppointmentListFilters = {

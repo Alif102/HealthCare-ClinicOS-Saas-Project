@@ -155,36 +155,78 @@ export default async function AppointmentDetailPage({
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Prescription</CardTitle>
+            <CardTitle>Clinical documentation</CardTitle>
             <CardDescription>
-              Medication orders linked to this visit
+              Visit notes and medication orders for this appointment
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {appointment.prescription ? (
-              <div className="flex flex-wrap items-center gap-3">
-                <Badge variant="outline">
-                  {PRESCRIPTION_STATUS_LABEL[appointment.prescription.status]}
-                </Badge>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-3 rounded-xl border border-border/70 p-4">
+              <p className="text-sm font-medium">Encounter</p>
+              {appointment.encounter ? (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    {appointment.encounter.chiefComplaint ||
+                      "Visit notes on file"}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      href={`/encounters/${appointment.encounter.id}`}
+                      className={cn(buttonVariants({ variant: "outline" }))}
+                    >
+                      Open notes
+                    </Link>
+                    {canWriteRx ? (
+                      <Link
+                        href={`/appointments/${appointment.id}/encounter`}
+                        className={cn(buttonVariants({ variant: "outline" }))}
+                      >
+                        Edit notes
+                      </Link>
+                    ) : null}
+                  </div>
+                </div>
+              ) : canWriteRx ? (
                 <Link
-                  href={`/prescriptions/${appointment.prescription.id}`}
-                  className={cn(buttonVariants({ variant: "outline" }))}
+                  href={`/appointments/${appointment.id}/encounter`}
+                  className={cn(buttonVariants())}
                 >
-                  Open prescription
+                  Write visit notes
                 </Link>
-              </div>
-            ) : canWriteRx ? (
-              <Link
-                href={`/prescriptions/new?patientId=${appointment.patientProfileId}&appointmentId=${appointment.id}`}
-                className={cn(buttonVariants())}
-              >
-                Write prescription
-              </Link>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                No prescription linked to this visit yet.
-              </p>
-            )}
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No visit notes yet.
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-3 rounded-xl border border-border/70 p-4">
+              <p className="text-sm font-medium">Prescription</p>
+              {appointment.prescription ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge variant="outline">
+                    {PRESCRIPTION_STATUS_LABEL[appointment.prescription.status]}
+                  </Badge>
+                  <Link
+                    href={`/prescriptions/${appointment.prescription.id}`}
+                    className={cn(buttonVariants({ variant: "outline" }))}
+                  >
+                    Open prescription
+                  </Link>
+                </div>
+              ) : canWriteRx ? (
+                <Link
+                  href={`/prescriptions/new?patientId=${appointment.patientProfileId}&appointmentId=${appointment.id}`}
+                  className={cn(buttonVariants())}
+                >
+                  Write prescription
+                </Link>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No prescription linked to this visit yet.
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

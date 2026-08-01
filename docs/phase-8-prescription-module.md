@@ -1,6 +1,6 @@
 # Phase 8 — Prescription Module
 
-**Status:** Complete (awaiting approval before Phase 9)  
+**Status:** Complete  
 **Scope:** Basic Rx CRUD + status workflow (no pharmacy integrations, e-prescribe networks, or medication databases)
 
 ---
@@ -101,6 +101,4 @@ pnpm dev
 
 ## Phase gate
 
-**Next:** Phase 9 — Medical History (allergies, conditions, encounters) — or Admin shell if you prefer the Phase 1 “Phases 2–8” cutover polish first.
-
-Do **not** start the next phase until you explicitly approve Phase 8.
+**Next:** Phase 9 — Medical History — **started / complete** (see phase-9 doc)
