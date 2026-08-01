@@ -4,7 +4,7 @@ Production-oriented Healthcare SaaS (Clinic Operating System) built with Next.js
 
 ## Current phase
 
-**Phase 9 — Medical History** is complete. See [docs/phase-9-medical-history.md](docs/phase-9-medical-history.md).
+**Phase 13 — Notifications** is complete. See [docs/phase-13-notifications.md](docs/phase-13-notifications.md).
 
 ## Getting started
 

@@ -430,6 +430,56 @@ async function main() {
     }
   }
 
+  if (doctorUser && patientUser) {
+    const existingAlerts = await prisma.notification.count({
+      where: {
+        tenantId: tenant.id,
+        channel: "IN_APP",
+        userId: { in: [doctorUser.userId, patientUser.userId] },
+      },
+    });
+
+    if (existingAlerts === 0) {
+      await prisma.notification.createMany({
+        data: [
+          {
+            tenantId: tenant.id,
+            userId: doctorUser.userId,
+            channel: "IN_APP",
+            title: "Welcome to ClinicOS alerts",
+            body: "You will see booking and visit updates here.",
+            metadata: {
+              event: "seed.welcome",
+              href: "/notifications",
+            },
+          },
+          {
+            tenantId: tenant.id,
+            userId: patientUser.userId,
+            channel: "IN_APP",
+            title: "Welcome to ClinicOS alerts",
+            body: "Appointment, billing, and prescription updates appear here.",
+            metadata: {
+              event: "seed.welcome",
+              href: "/notifications",
+            },
+          },
+          {
+            tenantId: tenant.id,
+            userId: patientUser.userId,
+            channel: "IN_APP",
+            title: "Demo telehealth visit",
+            body: "A video appointment is ready in your schedule.",
+            metadata: {
+              event: "video.room_ready",
+              href: "/video",
+            },
+          },
+        ],
+      });
+    }
+  }
+
   console.log("Seeded tenant:", tenant.slug);
   console.log("Demo password for all users:", DEMO_PASSWORD);
   console.table(

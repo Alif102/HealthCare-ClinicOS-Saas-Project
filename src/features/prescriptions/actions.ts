@@ -7,6 +7,8 @@ import {
   prescriptionFormSchema,
   updatePrescriptionStatusSchema,
 } from "@/features/prescriptions/schemas";
+import { NOTIFICATION_EVENT } from "@/features/notifications/constants";
+import { notifyUser } from "@/features/notifications/notify";
 import { requireTenantContext } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
 
@@ -302,7 +304,19 @@ export async function updatePrescriptionStatusAction(
     },
   });
 
+  if (nextStatus === "ACTIVE") {
+    await notifyUser({
+      tenantId: access.tenantId,
+      userId: access.prescription.patientUserId,
+      event: NOTIFICATION_EVENT.PRESCRIPTION_ISSUED,
+      title: "Prescription issued",
+      body: "Your clinician issued a new prescription.",
+      href: `/prescriptions/${prescriptionId}`,
+    });
+  }
+
   revalidatePath("/prescriptions");
   revalidatePath(`/prescriptions/${prescriptionId}`);
+  revalidatePath("/notifications");
   return { ok: true, prescriptionId };
 }

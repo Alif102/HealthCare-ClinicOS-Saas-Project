@@ -11,6 +11,8 @@ import {
   appointmentIdSchema,
   sessionIdSchema,
 } from "@/features/video/schemas";
+import { NOTIFICATION_EVENT } from "@/features/notifications/constants";
+import { notifyUser } from "@/features/notifications/notify";
 import { requireTenantContext } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
 
@@ -136,7 +138,27 @@ export async function createConsultationSessionAction(
     },
   });
 
+  const href = `/video/${created.id}`;
+  const recipients = [
+    appointment.doctorProfile.userId,
+    appointment.patientProfile.userId,
+  ].filter((id) => id !== session.user.id);
+
+  await Promise.all(
+    recipients.map((userId) =>
+      notifyUser({
+        tenantId,
+        userId,
+        event: NOTIFICATION_EVENT.VIDEO_ROOM_READY,
+        title: "Video room ready",
+        body: "A telehealth room is prepared for your visit.",
+        href,
+      }),
+    ),
+  );
+
   revalidateVideoPaths(appointment.id, created.id);
+  revalidatePath("/notifications");
   return { ok: true, sessionId: created.id };
 }
 

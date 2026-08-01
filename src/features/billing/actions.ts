@@ -18,6 +18,8 @@ import {
   recordPaymentSchema,
   updateInvoiceStatusSchema,
 } from "@/features/billing/schemas";
+import { NOTIFICATION_EVENT } from "@/features/notifications/constants";
+import { notifyUser } from "@/features/notifications/notify";
 import { requireTenantContext } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
 
@@ -33,6 +35,7 @@ type InvoiceAccess =
       tenantId: string;
       invoice: {
         id: string;
+        invoiceNumber: string;
         status: "DRAFT" | "PENDING" | "PAID" | "VOID" | "OVERDUE";
         patientProfileId: string;
         appointmentId: string | null;
@@ -55,6 +58,7 @@ async function assertCanManageInvoice(
     where: { id: invoiceId, tenantId },
     select: {
       id: true,
+      invoiceNumber: true,
       status: true,
       patientProfileId: true,
       appointmentId: true,
@@ -74,6 +78,7 @@ async function assertCanManageInvoice(
     tenantId,
     invoice: {
       id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
       status: invoice.status,
       patientProfileId: invoice.patientProfileId,
       appointmentId: invoice.appointmentId,
@@ -283,7 +288,19 @@ export async function updateInvoiceStatusAction(
     data: { status: nextStatus },
   });
 
+  if (nextStatus === "PENDING") {
+    await notifyUser({
+      tenantId: access.tenantId,
+      userId: access.invoice.patientUserId,
+      event: NOTIFICATION_EVENT.INVOICE_ISSUED,
+      title: "Invoice issued",
+      body: `${access.invoice.invoiceNumber} is ready for payment.`,
+      href: `/billing/${invoiceId}`,
+    });
+  }
+
   revalidateInvoicePaths(invoiceId, access.invoice.appointmentId);
+  revalidatePath("/notifications");
   return { ok: true, invoiceId };
 }
 
@@ -348,6 +365,18 @@ export async function recordPaymentAction(
     }),
   ]);
 
+  if (fullyPaid) {
+    await notifyUser({
+      tenantId: access.tenantId,
+      userId: access.invoice.patientUserId,
+      event: NOTIFICATION_EVENT.INVOICE_PAID,
+      title: "Invoice paid",
+      body: `${access.invoice.invoiceNumber} is marked paid. Thank you.`,
+      href: `/billing/${invoiceId}`,
+    });
+  }
+
   revalidateInvoicePaths(invoiceId, access.invoice.appointmentId);
+  revalidatePath("/notifications");
   return { ok: true, invoiceId };
 }

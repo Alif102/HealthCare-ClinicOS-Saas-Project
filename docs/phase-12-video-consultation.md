@@ -1,6 +1,6 @@
 # Phase 12 — Video Consultation
 
-**Status:** Complete (awaiting approval before Phase 13)  
+**Status:** Complete  
 **Scope:** Auth-gated video rooms for `VIDEO` appointments — not a full telehealth marketplace, recording, or HIPAA BAA video vendor contract
 
 ---
@@ -112,6 +112,6 @@ When you want a signed BAA / private rooms, introduce `DAILY_API_KEY` (or simila
 
 ## Phase gate
 
-**Next:** Phase 13 — Notifications
+Phase 13 (Notifications) followed this phase.
 
-Do **not** start the next phase until you explicitly approve Phase 12.
+**Historical next:** Phase 13 — Notifications → see `docs/phase-13-notifications.md`

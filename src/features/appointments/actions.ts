@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import {
+  APPOINTMENT_STATUS_LABEL,
   PATIENT_CANCELLABLE,
   STATUS_TRANSITIONS,
 } from "@/features/appointments/constants";
@@ -13,9 +14,19 @@ import {
 } from "@/features/appointments/schemas";
 import { getAvailableSlots } from "@/features/appointments/queries";
 import { slotEndFromAvailability } from "@/features/appointments/slots";
+import { NOTIFICATION_EVENT } from "@/features/notifications/constants";
+import { notifyUser } from "@/features/notifications/notify";
 import { requireTenantContext } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
 import type { Role } from "@/types/roles";
+
+function formatAppointmentWhen(date: Date) {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(date);
+}
 
 type ActionResult =
   | { ok: true; appointmentId?: string }
@@ -226,8 +237,32 @@ export async function bookAppointmentAction(
     },
   });
 
+  const when = formatAppointmentWhen(startAt);
+  const href = `/appointments/${appointment.id}`;
+
+  await notifyUser({
+    tenantId,
+    userId: doctor.userId,
+    event: NOTIFICATION_EVENT.APPOINTMENT_BOOKED,
+    title: "New appointment booked",
+    body: `A visit is scheduled for ${when} (UTC).`,
+    href,
+  });
+
+  if (patient.userId !== doctor.userId) {
+    await notifyUser({
+      tenantId,
+      userId: patient.userId,
+      event: NOTIFICATION_EVENT.APPOINTMENT_BOOKED,
+      title: "Appointment confirmed",
+      body: `Your visit is scheduled for ${when} (UTC).`,
+      href,
+    });
+  }
+
   revalidatePath("/appointments");
   revalidatePath(`/appointments/${appointment.id}`);
+  revalidatePath("/notifications");
   return { ok: true, appointmentId: appointment.id };
 }
 
@@ -286,7 +321,30 @@ export async function updateAppointmentStatusAction(
     },
   });
 
+  const statusLabel = APPOINTMENT_STATUS_LABEL[nextStatus];
+  const href = `/appointments/${appointmentId}`;
+  const recipients = new Set([
+    access.appointment.doctorUserId,
+    access.appointment.patientUserId,
+  ]);
+  recipients.delete(access.session.user.id);
+
+  await Promise.all(
+    [...recipients].map((userId) =>
+      notifyUser({
+        tenantId: access.tenantId,
+        userId,
+        event: NOTIFICATION_EVENT.APPOINTMENT_STATUS,
+        title: `Appointment ${statusLabel.toLowerCase()}`,
+        body: `Visit status is now ${statusLabel}.`,
+        href,
+        meta: { status: nextStatus },
+      }),
+    ),
+  );
+
   revalidatePath("/appointments");
   revalidatePath(`/appointments/${appointmentId}`);
+  revalidatePath("/notifications");
   return { ok: true, appointmentId };
 }

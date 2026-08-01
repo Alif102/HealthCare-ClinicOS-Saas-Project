@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { countUnreadNotifications } from "@/features/notifications/queries";
 import { siteConfig } from "@/config/site";
 import {
   getActiveMembership,
@@ -18,6 +19,11 @@ export default async function AppLayout({
     session.user.id,
     session.session.activeTenantId,
   );
+
+  const unreadCount =
+    membership != null
+      ? await countUnreadNotifications(membership.tenantId, session.user.id)
+      : 0;
 
   const links = [
     { href: "/dashboard", label: "Dashboard" },
@@ -39,6 +45,10 @@ export default async function AppLayout({
       ? [{ href: "/billing", label: "Billing" }]
       : []),
     { href: "/video", label: "Video" },
+    {
+      href: "/notifications",
+      label: unreadCount > 0 ? `Alerts (${unreadCount})` : "Alerts",
+    },
   ];
 
   return (
@@ -57,7 +67,12 @@ export default async function AppLayout({
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={cn("hover:text-foreground")}
+                  className={cn(
+                    "hover:text-foreground",
+                    link.href === "/notifications" &&
+                      unreadCount > 0 &&
+                      "font-medium text-teal-800",
+                  )}
                 >
                   {link.label}
                 </Link>

@@ -12,6 +12,7 @@ import {
 import { listAppointments } from "@/features/appointments/queries";
 import { listInvoices } from "@/features/billing/queries";
 import { getDoctorByUserId, listDoctors } from "@/features/doctors/queries";
+import { countUnreadNotifications } from "@/features/notifications/queries";
 import {
   getPatientByUserId,
   listPatients,
@@ -47,7 +48,12 @@ export default async function DashboardPage() {
   let upcomingCount = 0;
   let prescriptionCount = 0;
   let invoiceCount = 0;
+  let unreadNotifications = 0;
   if (membership) {
+    unreadNotifications = await countUnreadNotifications(
+      membership.tenantId,
+      session.user.id,
+    );
     if (membership.role === "DOCTOR") {
       const me = await getDoctorByUserId(membership.tenantId, session.user.id);
       const rows = me
@@ -137,6 +143,28 @@ export default async function DashboardPage() {
               <span className="text-muted-foreground">Clinic:</span>{" "}
               {membership?.tenant.name ?? "—"}
             </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Alerts</CardTitle>
+            <CardDescription>
+              {unreadNotifications} unread notification
+              {unreadNotifications === 1 ? "" : "s"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              In-app alerts for bookings, invoices, prescriptions, and video
+              rooms.
+            </p>
+            <Link
+              href="/notifications"
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              Open notifications
+            </Link>
           </CardContent>
         </Card>
 
