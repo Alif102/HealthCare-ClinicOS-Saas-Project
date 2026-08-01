@@ -213,6 +213,29 @@ export default async function DashboardPage() {
             </Link>
           </CardContent>
         </Card>
+
+        {!isPatient ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Reports</CardTitle>
+              <CardDescription>
+                Appointment volume, Rx mix, and clinician workload
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Date-ranged operational metrics for the clinic (or your own
+                panel if you are a doctor).
+              </p>
+              <Link
+                href="/reports"
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                Open reports
+              </Link>
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </div>
   );

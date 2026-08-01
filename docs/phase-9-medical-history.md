@@ -1,6 +1,6 @@
 # Phase 9 — Medical History
 
-**Status:** Complete (awaiting approval before Phase 10)  
+**Status:** Complete  
 **Scope:** Allergies, conditions, and encounter (visit) notes only — not full EMR charting, ICD coding, or document uploads
 
 ---
@@ -102,6 +102,4 @@ Seed adds a penicillin allergy, seasonal asthma condition, and (when possible) a
 
 ## Phase gate
 
-**Next:** Phase 10 — likely Billing, Reports, Admin shell, Notifications, or Video (follow your remaining phase order).
-
-Do **not** start the next phase until you explicitly approve Phase 9.
+**Next:** Phase 10 — Reports — **started / complete** (see phase-10 doc).
