@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /**
  * Example shared schema pattern for Phase 2.
- * Real domain schemas live next to their feature modules.
+ * Reallll domain schemas live next to their feature modules.
  */
 export const contactNameSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(80),
