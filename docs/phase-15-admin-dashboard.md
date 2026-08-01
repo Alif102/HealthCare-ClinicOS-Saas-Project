@@ -1,6 +1,6 @@
 # Phase 15 — Admin Dashboard
 
-**Status:** Complete (awaiting approval before Phase 16)  
+**Status:** Complete
 **Scope:** Clinic settings, staff invite/membership controls, overview metrics, activity snapshot — not multi-clinic org trees, SSO, or immutable compliance audit logs
 
 ---
@@ -112,6 +112,6 @@ pnpm dev
 
 ## Phase gate
 
-**Next:** Phase 16 — Testing & Optimization
+**Next:** Phase 17 — Deployment (Vercel) (after Phase 16)
 
-Do **not** start the next phase until you explicitly approve Phase 15.
+Phase 16 — Testing & Optimization: see `docs/phase-16-testing-optimization.md`.

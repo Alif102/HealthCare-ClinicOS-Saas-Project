@@ -1,5 +1,6 @@
 import type { PrescriptionStatus } from "@prisma/client";
 
+import { clampTake } from "@/lib/pagination";
 import { prisma } from "@/lib/db";
 
 const prescriptionInclude = {
@@ -41,7 +42,7 @@ export async function listPrescriptions(
   tenantId: string,
   filters: PrescriptionListFilters = {},
 ) {
-  const take = Math.min(filters.take ?? 50, 100);
+  const take = clampTake(filters.take);
 
   return prisma.prescription.findMany({
     where: {

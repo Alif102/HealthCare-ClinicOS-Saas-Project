@@ -11,6 +11,7 @@ import { NOTIFICATION_EVENT } from "@/features/notifications/constants";
 import { notifyUser } from "@/features/notifications/notify";
 import { requireTenantContext } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
+import { canTransition } from "@/lib/transitions";
 
 type ActionResult =
   | { ok: true; prescriptionId?: string }
@@ -278,9 +279,10 @@ export async function updatePrescriptionStatusAction(
   }
 
   const nextStatus = parsed.data.status;
-  const allowed = STATUS_TRANSITIONS[access.prescription.status];
 
-  if (!allowed.includes(nextStatus)) {
+  if (
+    !canTransition(STATUS_TRANSITIONS, access.prescription.status, nextStatus)
+  ) {
     return {
       ok: false,
       error: `Cannot move from ${access.prescription.status} to ${nextStatus}`,

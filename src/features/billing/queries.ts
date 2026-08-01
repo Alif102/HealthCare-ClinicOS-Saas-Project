@@ -1,6 +1,7 @@
 import type { InvoiceStatus } from "@prisma/client";
 
-import { sumDecimals, toDecimal } from "@/features/billing/money";
+import { nextInvoiceSequence } from "@/features/billing/invoice-number";
+import { clampTake } from "@/lib/pagination";
 import { prisma } from "@/lib/db";
 
 const invoiceInclude = {
@@ -45,7 +46,7 @@ export async function listInvoices(
   tenantId: string,
   filters: InvoiceListFilters = {},
 ) {
-  const take = Math.min(filters.take ?? 50, 100);
+  const take = clampTake(filters.take);
 
   return prisma.invoice.findMany({
     where: {
@@ -126,17 +127,5 @@ export async function nextInvoiceNumber(tenantId: string) {
     select: { invoiceNumber: true },
   });
 
-  const lastSeq = latest
-    ? Number(latest.invoiceNumber.slice(prefix.length))
-    : 0;
-  const next = Number.isFinite(lastSeq) ? lastSeq + 1 : 1;
-  return `${prefix}${String(next).padStart(4, "0")}`;
-}
-
-export function amountPaidFromPayments(
-  payments: { amount: { toString(): string } }[],
-) {
-  return sumDecimals(
-    payments.map((payment) => toDecimal(payment.amount.toString())),
-  );
+  return nextInvoiceSequence(year, latest?.invoiceNumber);
 }

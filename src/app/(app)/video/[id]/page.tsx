@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { VideoRoom } from "@/features/video/components/video-room";
+import { VideoRoomLazy } from "@/features/video/components/video-room-lazy";
 import { VideoSessionActions } from "@/features/video/components/video-session-actions";
 import { VIDEO_SESSION_STATUS_LABEL } from "@/features/video/constants";
 import { getConsultationById } from "@/features/video/queries";
@@ -90,7 +90,7 @@ export default async function VideoSessionPage({
         </Link>
       </div>
 
-      <VideoRoom
+      <VideoRoomLazy
         sessionId={consultation.id}
         roomName={consultation.roomName}
         displayName={session.user.name}

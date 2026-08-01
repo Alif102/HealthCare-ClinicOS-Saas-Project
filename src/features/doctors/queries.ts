@@ -1,6 +1,10 @@
+import { clampTake } from "@/lib/pagination";
 import { prisma } from "@/lib/db";
 
-export async function listDoctors(tenantId: string) {
+export async function listDoctors(
+  tenantId: string,
+  options: { take?: number } = {},
+) {
   return prisma.doctorProfile.findMany({
     where: { tenantId },
     include: {
@@ -19,6 +23,7 @@ export async function listDoctors(tenantId: string) {
       },
     },
     orderBy: [{ specialty: "asc" }, { createdAt: "asc" }],
+    take: clampTake(options.take),
   });
 }
 

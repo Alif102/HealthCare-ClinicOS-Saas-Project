@@ -1,3 +1,4 @@
+import { clampTake } from "@/lib/pagination";
 import { prisma } from "@/lib/db";
 import { resolveVideoSessionStatus } from "@/features/video/constants";
 
@@ -61,7 +62,7 @@ export async function listVideoAppointments(
     take?: number;
   } = {},
 ) {
-  const take = Math.min(filters.take ?? 30, 50);
+  const take = clampTake(filters.take, { defaultTake: 30, maxTake: 50 });
 
   return prisma.appointment.findMany({
     where: {

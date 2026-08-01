@@ -216,6 +216,7 @@ model TenantMembership {
   @@unique([tenantId, userId])
   @@index([userId])
   @@index([tenantId, role])
+  @@index([tenantId, status])
   @@map("tenant_membership")
 }
 
@@ -242,6 +243,7 @@ model DoctorProfile {
 
   @@index([tenantId])
   @@index([tenantId, specialty])
+  @@index([tenantId, createdAt])
   @@map("doctor_profile")
 }
 
@@ -290,6 +292,7 @@ model PatientProfile {
   invoices      Invoice[]
 
   @@index([tenantId])
+  @@index([tenantId, createdAt])
   @@map("patient_profile")
 }
 
@@ -322,6 +325,7 @@ model Appointment {
   @@index([tenantId, doctorProfileId, startAt])
   @@index([tenantId, patientProfileId, startAt])
   @@index([tenantId, status])
+  @@index([tenantId, type, startAt])
   @@map("appointment")
 }
 
@@ -383,6 +387,7 @@ model Encounter {
 
   @@index([tenantId, patientProfileId])
   @@index([tenantId, doctorProfileId])
+  @@index([tenantId, createdAt])
   @@map("encounter")
 }
 
@@ -408,6 +413,8 @@ model Prescription {
 
   @@index([tenantId, patientProfileId])
   @@index([tenantId, doctorProfileId])
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
   @@map("prescription")
 }
 
@@ -456,6 +463,7 @@ model Invoice {
   @@unique([tenantId, invoiceNumber])
   @@index([tenantId, status])
   @@index([tenantId, patientProfileId])
+  @@index([tenantId, createdAt])
   @@map("invoice")
 }
 

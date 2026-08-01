@@ -4,7 +4,13 @@ import type {
   PrescriptionStatus,
 } from "@prisma/client";
 
+import {
+  buildDailyVolume,
+  type DailyVolumeRow,
+} from "@/features/reports/daily-volume";
 import { prisma } from "@/lib/db";
+
+export type { DailyVolumeRow };
 
 export type ReportScope = {
   tenantId: string;
@@ -319,11 +325,6 @@ export async function getDoctorWorkload(
     .sort((a, b) => b.appointments - a.appointments);
 }
 
-export type DailyVolumeRow = {
-  date: string;
-  count: number;
-};
-
 export async function getDailyAppointmentVolume(
   scope: ReportScope,
 ): Promise<DailyVolumeRow[]> {
@@ -339,21 +340,9 @@ export async function getDailyAppointmentVolume(
     orderBy: { startAt: "asc" },
   });
 
-  const counts = new Map<string, number>();
-  const cursor = new Date(`${scope.from}T00:00:00.000Z`);
-  const end = new Date(`${scope.to}T00:00:00.000Z`);
-
-  while (cursor <= end) {
-    counts.set(cursor.toISOString().slice(0, 10), 0);
-    cursor.setUTCDate(cursor.getUTCDate() + 1);
-  }
-
-  for (const row of appointments) {
-    const key = row.startAt.toISOString().slice(0, 10);
-    if (counts.has(key)) {
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-  }
-
-  return [...counts.entries()].map(([date, count]) => ({ date, count }));
+  return buildDailyVolume({
+    from: scope.from,
+    to: scope.to,
+    startAts: appointments.map((row) => row.startAt),
+  });
 }

@@ -17,7 +17,13 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/patients") ||
     pathname.startsWith("/appointments") ||
     pathname.startsWith("/prescriptions") ||
-    pathname.startsWith("/encounters");
+    pathname.startsWith("/encounters") ||
+    pathname.startsWith("/billing") ||
+    pathname.startsWith("/reports") ||
+    pathname.startsWith("/notifications") ||
+    pathname.startsWith("/video") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/ai");
 
   if (isProtectedRoute && !sessionCookie) {
     const url = request.nextUrl.clone();
@@ -43,6 +49,12 @@ export const config = {
     "/appointments/:path*",
     "/prescriptions/:path*",
     "/encounters/:path*",
+    "/billing/:path*",
+    "/reports/:path*",
+    "/notifications/:path*",
+    "/video/:path*",
+    "/admin/:path*",
+    "/ai/:path*",
     "/sign-in",
     "/sign-up",
   ],

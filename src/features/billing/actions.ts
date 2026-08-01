@@ -8,9 +8,8 @@ import {
   PAYABLE_STATUSES,
   STATUS_TRANSITIONS,
 } from "@/features/billing/constants";
-import { toDecimal } from "@/features/billing/money";
+import { toDecimal, amountPaidFromPayments } from "@/features/billing/money";
 import {
-  amountPaidFromPayments,
   nextInvoiceNumber,
 } from "@/features/billing/queries";
 import {
@@ -22,6 +21,7 @@ import { NOTIFICATION_EVENT } from "@/features/notifications/constants";
 import { notifyUser } from "@/features/notifications/notify";
 import { requireTenantContext } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
+import { canTransition } from "@/lib/transitions";
 
 type ActionResult =
   | { ok: true; invoiceId?: string }
@@ -270,9 +270,8 @@ export async function updateInvoiceStatusAction(
   }
 
   const nextStatus = parsed.data.status;
-  const allowed = STATUS_TRANSITIONS[access.invoice.status];
 
-  if (!allowed.includes(nextStatus)) {
+  if (!canTransition(STATUS_TRANSITIONS, access.invoice.status, nextStatus)) {
     return {
       ok: false,
       error: `Cannot move from ${access.invoice.status} to ${nextStatus}`,

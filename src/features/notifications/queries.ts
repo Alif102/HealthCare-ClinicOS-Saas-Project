@@ -1,3 +1,4 @@
+import { clampTake } from "@/lib/pagination";
 import { prisma } from "@/lib/db";
 
 export type NotificationListFilters = {
@@ -10,7 +11,7 @@ export async function listNotificationsForUser(
   userId: string,
   filters: NotificationListFilters = {},
 ) {
-  const take = Math.min(filters.take ?? 50, 100);
+  const take = clampTake(filters.take);
 
   return prisma.notification.findMany({
     where: {

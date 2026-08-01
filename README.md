@@ -4,7 +4,7 @@ Production-oriented Healthcare SaaS (Clinic Operating System) built with Next.js
 
 ## Current phase
 
-**Phase 15 — Admin Dashboard** is complete. See [docs/phase-15-admin-dashboard.md](docs/phase-15-admin-dashboard.md).
+**Phase 16 — Testing & Optimization** is complete. See [docs/phase-16-testing-optimization.md](docs/phase-16-testing-optimization.md).
 
 ## Getting started
 
@@ -21,7 +21,10 @@ pnpm dev
 | `pnpm build` | Production build |
 | `pnpm start` | Run production server |
 | `pnpm lint` | ESLint |
+| `pnpm typecheck` | TypeScript (`tsc --noEmit`) |
+| `pnpm test` | Unit tests (Vitest) |
+| `pnpm test:watch` | Vitest watch mode |
 
 ## Stack
 
-Next.js App Router · TypeScript · Tailwind CSS · shadcn/ui · Redux Toolkit · React Hook Form · Zod · Framer Motion · Prisma · Better Auth · PostgreSQL
+Next.js App Router · TypeScript · Tailwind CSS · shadcn/ui · Redux Toolkit · React Hook Form · Zod · Framer Motion · Prisma · Better Auth · PostgreSQL · Vitest

@@ -1,10 +1,11 @@
 import type { AppointmentStatus } from "@prisma/client";
 
-import { prisma } from "@/lib/db";
 import {
   generateBookableSlots,
   type BookableSlot,
 } from "@/features/appointments/slots";
+import { clampTake } from "@/lib/pagination";
+import { prisma } from "@/lib/db";
 
 const appointmentInclude = {
   doctorProfile: {
@@ -74,7 +75,7 @@ export async function listAppointments(
   tenantId: string,
   filters: AppointmentListFilters = {},
 ) {
-  const take = Math.min(filters.take ?? 50, 100);
+  const take = clampTake(filters.take);
   const startAtFilter: { gte?: Date; lte?: Date } = {};
 
   if (filters.from) {
@@ -114,7 +115,10 @@ export async function getAppointmentById(
   });
 }
 
-export async function listAcceptingDoctors(tenantId: string) {
+export async function listAcceptingDoctors(
+  tenantId: string,
+  options: { take?: number } = {},
+) {
   return prisma.doctorProfile.findMany({
     where: {
       tenantId,
@@ -126,6 +130,7 @@ export async function listAcceptingDoctors(tenantId: string) {
       },
     },
     orderBy: [{ specialty: "asc" }, { createdAt: "asc" }],
+    take: clampTake(options.take, { defaultTake: 100, maxTake: 200 }),
   });
 }
 

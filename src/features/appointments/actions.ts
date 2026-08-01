@@ -18,6 +18,7 @@ import { NOTIFICATION_EVENT } from "@/features/notifications/constants";
 import { notifyUser } from "@/features/notifications/notify";
 import { requireTenantContext } from "@/lib/auth-session";
 import { prisma } from "@/lib/db";
+import { canTransition } from "@/lib/transitions";
 import type { Role } from "@/types/roles";
 
 function formatAppointmentWhen(date: Date) {
@@ -297,8 +298,7 @@ export async function updateAppointmentStatusAction(
       return { ok: false, error: "Patients may only cancel upcoming appointments" };
     }
   } else {
-    const allowed = STATUS_TRANSITIONS[current];
-    if (!allowed.includes(nextStatus)) {
+    if (!canTransition(STATUS_TRANSITIONS, current, nextStatus)) {
       return {
         ok: false,
         error: `Cannot move from ${current} to ${nextStatus}`,

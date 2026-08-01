@@ -41,3 +41,11 @@ export function sumDecimals(values: Prisma.Decimal[]) {
     new Prisma.Decimal(0),
   );
 }
+
+export function amountPaidFromPayments(
+  payments: { amount: { toString(): string } }[],
+) {
+  return sumDecimals(
+    payments.map((payment) => toDecimal(payment.amount.toString())),
+  );
+}
