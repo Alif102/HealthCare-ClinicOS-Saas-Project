@@ -1,6 +1,6 @@
 # Phase 13 — Notifications
 
-**Status:** Complete (awaiting approval before Phase 14)  
+**Status:** Complete
 **Scope:** In-app notification inbox + optional Resend email — not push/SMS, digests, or full preference centers
 
 ---
@@ -123,6 +123,6 @@ Without the key, in-app still works (ThemeForest-friendly).
 
 ## Phase gate
 
-**Next:** Phase 14 — AI Features
+**Next:** Phase 15 — Admin Dashboard (after Phase 14)
 
-Do **not** start the next phase until you explicitly approve Phase 13.
+Phase 14 — AI Features: see `docs/phase-14-ai-features.md`.

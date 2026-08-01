@@ -45,6 +45,12 @@ export default async function AppLayout({
       ? [{ href: "/billing", label: "Billing" }]
       : []),
     { href: "/video", label: "Video" },
+    ...(membership?.role === "DOCTOR"
+      ? [{ href: "/ai", label: "AI Assist" }]
+      : []),
+    ...(membership?.role === "ADMIN"
+      ? [{ href: "/admin", label: "Admin" }]
+      : []),
     {
       href: "/notifications",
       label: unreadCount > 0 ? `Alerts (${unreadCount})` : "Alerts",

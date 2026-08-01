@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DraftEncounterAssist } from "@/features/ai/components/draft-encounter-assist";
 import { upsertEncounterAction } from "@/features/medical-history/actions";
 import {
   encounterSchema,
@@ -31,6 +32,8 @@ export function EncounterForm({
   const {
     register,
     handleSubmit,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm<EncounterInput>({
     resolver: zodResolver(encounterSchema),
@@ -68,6 +71,15 @@ export function EncounterForm({
           {...register("chiefComplaint")}
         />
       </div>
+
+      <DraftEncounterAssist
+        appointmentId={appointmentId}
+        getChiefComplaint={() => getValues("chiefComplaint") ?? ""}
+        onDraft={(draft) => {
+          setValue("assessment", draft.assessment, { shouldDirty: true });
+          setValue("plan", draft.plan, { shouldDirty: true });
+        }}
+      />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-2">

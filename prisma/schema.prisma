@@ -178,6 +178,8 @@ model Tenant {
   address     String?
   timezone    String   @default("UTC")
   isActive    Boolean  @default(true)
+  /// Clinic feature flags / preferences (e.g. { "aiAssistEnabled": true })
+  settings    Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

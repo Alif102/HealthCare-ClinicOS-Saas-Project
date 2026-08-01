@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { SuggestRxAssist } from "@/features/ai/components/suggest-rx-assist";
 import {
   createPrescriptionAction,
   updatePrescriptionAction,
@@ -69,6 +70,7 @@ export function PrescriptionForm({
     control,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<PrescriptionFormInput>({
     resolver: zodResolver(prescriptionFormSchema),
@@ -82,7 +84,7 @@ export function PrescriptionForm({
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, replace } = useFieldArray({
     control,
     name: "items",
   });
@@ -167,6 +169,26 @@ export function PrescriptionForm({
           {...register("notes")}
         />
       </div>
+
+      <SuggestRxAssist
+        patientProfileId={patientProfileId}
+        getClinicalHint={() => getValues("notes") ?? ""}
+        onSuggest={(draft) => {
+          replace(
+            draft.items.map((item) => ({
+              medicationName: item.medicationName,
+              dosage: item.dosage,
+              frequency: item.frequency,
+              duration: item.duration,
+              instructions: item.instructions,
+              quantity: "",
+            })),
+          );
+          if (draft.notes) {
+            setValue("notes", draft.notes, { shouldDirty: true });
+          }
+        }}
+      />
 
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3">

@@ -4,7 +4,7 @@ Production-oriented Healthcare SaaS (Clinic Operating System) built with Next.js
 
 ## Current phase
 
-**Phase 13 — Notifications** is complete. See [docs/phase-13-notifications.md](docs/phase-13-notifications.md).
+**Phase 15 — Admin Dashboard** is complete. See [docs/phase-15-admin-dashboard.md](docs/phase-15-admin-dashboard.md).
 
 ## Getting started
 

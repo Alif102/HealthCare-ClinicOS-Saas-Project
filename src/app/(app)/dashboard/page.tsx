@@ -319,6 +319,52 @@ export default async function DashboardPage() {
             </Link>
           </CardContent>
         </Card>
+
+        {membership?.role === "DOCTOR" ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>AI Assist</CardTitle>
+              <CardDescription>
+                Draft visit notes and Rx suggestions
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Clinician-only assistive drafts — local templates or optional
+                OpenAI.
+              </p>
+              <Link
+                href="/ai"
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                Open AI Assist
+              </Link>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        {membership?.role === "ADMIN" ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Admin</CardTitle>
+              <CardDescription>
+                Clinic settings, team, and activity
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Configure the practice, invite staff, and review a clinic
+                snapshot.
+              </p>
+              <Link
+                href="/admin"
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                Open admin
+              </Link>
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </div>
   );
